@@ -1,0 +1,33 @@
+Green Valley Secondary School - Exam Analytics
+Scope,End-Term - Term 3 2026 (sample)
+Generated,2026-10-02 14:58
+
+OVERVIEW
+Students,Subjects,Examinations,Marks recorded
+120,9,4,980
+
+PER-EXAM SUMMARY
+Examination,Entries,Mean,Lowest,Highest,Mean grade
+End-Term - Term 3 2026,300,61.4,18.0,97.0,B-
+Mid-Term - Term 3 2026,290,58.2,12.0,94.0,C+
+
+GRADE DISTRIBUTION
+Grade,A,A-,B+,B,B-,C+,C,C-,D+,D,D-,E
+Count,22,31,44,58,70,66,52,40,28,18,9,4
+
+SUBJECT PERFORMANCE
+Subject,Entries,Mean,Lowest,Highest,Mean grade
+Mathematics,120,64.2,20.0,97.0,B-
+English,120,59.8,25.0,91.0,C+
+Biology,118,55.1,18.0,88.0,C+
+
+CLASS PERFORMANCE
+Class,Entries,Mean,Mean grade
+Form 4 East,240,63.5,B-
+Form 4 West,230,59.1,C+
+
+TOP 10 STUDENTS
+#,Adm. No,Name,Class,Subjects,Average,Mean grade
+1,GV041,Aisha Mwangi,Form 4 East,8,88.6,A
+2,GV017,Brian Otieno,Form 4 West,8,85.2,A
+3,GV102,Cynthia Wairimu,Form 4 East,8,83.9,A

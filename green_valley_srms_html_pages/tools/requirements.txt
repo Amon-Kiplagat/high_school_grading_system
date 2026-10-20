@@ -1,0 +1,12 @@
+# Python dependencies for tools/analytics.py
+# Install with:   pip install -r tools/requirements.txt
+#
+# On Arch you can instead use the system packages if you prefer:
+#   sudo pacman -S python-psycopg2 python-reportlab
+
+# PostgreSQL driver (read-only use here). psycopg2-binary ships prebuilt wheels
+# so no compiler is needed. The script also works with psycopg (v3) if you have it.
+psycopg2-binary>=2.9
+
+# PDF generation (tables + bar chart). Pure Python, no system libraries needed.
+reportlab>=4.0

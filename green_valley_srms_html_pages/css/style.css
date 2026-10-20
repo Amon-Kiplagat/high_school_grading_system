@@ -1,0 +1,789 @@
+/* ==========================================================================
+   Green Valley SRMS — style.css  (redesigned)
+   --------------------------------------------------------------------------
+   A calm, institutional look for a school records system: deep pine green
+   with a warm gold accent on a soft paper background. Data tables and the
+   printable report card are treated as the heroes.
+
+   The class names are unchanged from before, so every .php page and all the
+   JavaScript hooks (.field-error, .alert, .grade, .actions, .searchbar,
+   .btn-sm, .btn-danger, #grade-preview, data-validate, data-confirm) keep
+   working. Only the presentation changed.
+
+   Want different school colours? Edit the variables in :root — everything
+   else follows from them.
+   ========================================================================== */
+
+:root {
+    color-scheme: light;
+
+    /* Brand palette */
+    --pine:        #1f5138;   /* primary institutional green */
+    --pine-deep:   #163b28;   /* hover / depth */
+    --pine-soft:   #2f7d54;   /* brighter green: links, focus, accents */
+    --gold:        #c98a2b;   /* achievement accent (active marker, rules) */
+    --gold-deep:   #98651a;   /* gold that is dark enough for text */
+
+    /* Neutrals */
+    --paper:       #f2f4ef;   /* page background (warm-cool, not cream) */
+    --surface:     #ffffff;   /* cards / panels */
+    --surface-2:   #f7f9f5;   /* subtle fill: zebra rows, readonly fields */
+    --ink:         #1b2a24;   /* primary text (green-tinted charcoal) */
+    --muted:       #5c6b63;   /* secondary text */
+    --line:        #e3e7df;   /* hairline borders */
+    --line-strong: #cfd6cb;
+
+    /* Feedback */
+    --ok-bg:   #e6f2e9;  --ok-fg:   #1c6b3a;  --ok-line:  #bfe0c9;
+    --err-bg:  #fbeaea;  --err-fg:  #a3271f;  --err-line: #f0c4c1;
+
+    /* Type scale */
+    --font: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
+            Arial, "Noto Sans", sans-serif;
+    --fs-xs:  0.78rem;
+    --fs-sm:  0.86rem;
+    --fs-base:0.95rem;
+    --fs-md:  1.05rem;
+    --fs-lg:  1.25rem;
+    --fs-xl:  1.6rem;
+    --fs-num: 2.15rem;
+
+    /* Shape & depth (deliberately varied, not one radius on everything) */
+    --r-sm: 6px;
+    --r:    10px;
+    --r-lg: 16px;
+    --pill: 999px;
+    --shadow: 0 1px 2px rgba(20,45,32,.05), 0 6px 20px -12px rgba(20,45,32,.25);
+    --sidebar-w: 244px;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    font-family: var(--font);
+    font-size: var(--fs-base);
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { line-height: 1.2; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+
+a { color: var(--pine-soft); text-decoration: none; }
+a:hover { color: var(--pine-deep); }
+
+::selection { background: rgba(47,125,84,.18); }
+
+:focus-visible {
+    outline: 2px solid var(--pine-soft);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+.sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--pine) 0%, var(--pine-deep) 100%);
+    color: #e8efe9;
+    padding: 22px 0 16px;
+    z-index: 20;
+}
+
+/* Brand block */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.brand-crest {
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: grid; place-items: center;
+    background: var(--gold);
+    color: var(--pine-deep);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+}
+.brand-name   { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.15; }
+.brand-name span { display: block; font-size: var(--fs-xs); font-weight: 500;
+                   color: #a9c6b5; letter-spacing: .02em; }
+
+/* Nav groups */
+.nav { flex: 1 1 auto; padding: 6px 12px; overflow-y: auto; }
+.nav-group { margin: 14px 0 4px; }
+.nav-group:first-child { margin-top: 4px; }
+.nav-label {
+    font-size: var(--fs-xs);
+    color: #7fa891;
+    padding: 4px 12px;
+    margin-bottom: 2px;
+}
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #d7e4dc;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    position: relative;
+    transition: background .12s ease, color .12s ease;
+}
+.sidebar a svg { width: 18px; height: 18px; flex: 0 0 auto; opacity: .85; }
+.sidebar a:hover { background: rgba(255,255,255,.08); color: #fff; }
+.sidebar a.active {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-weight: 600;
+}
+.sidebar a.active svg { opacity: 1; }
+/* gold current-location marker */
+.sidebar a.active::before {
+    content: "";
+    position: absolute;
+    left: -12px; top: 50%;
+    transform: translateY(-50%);
+    width: 4px; height: 22px;
+    background: var(--gold);
+    border-radius: 0 3px 3px 0;
+}
+
+/* Sidebar footer: signed-in user + logout */
+.side-foot {
+    margin: 8px 12px 0;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,.10);
+}
+.side-user { padding: 0 4px 10px; }
+.side-user b { display: block; color: #fff; font-size: var(--fs-sm); font-weight: 600; }
+.side-user small { color: #9dbdab; font-size: var(--fs-xs); }
+.side-foot .logout-btn {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 12px;
+    border-radius: var(--r-sm);
+    color: #e8efe9;
+    background: rgba(255,255,255,.06);
+    font-size: var(--fs-sm); font-weight: 500;
+}
+.side-foot .logout-btn svg { width: 17px; height: 17px; }
+.side-foot .logout-btn:hover { background: rgba(255,255,255,.13); color: #fff; }
+
+/* Legacy: any bare .logout wrapper still renders sensibly */
+.logout { margin-top: 16px; }
+
+/* ==========================================================================
+   Main content
+   ========================================================================== */
+.main {
+    margin-left: var(--sidebar-w);
+    padding: 0 32px 40px;
+    max-width: 1200px;
+}
+
+/* Topbar as a light sticky header (not a floating card) */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--paper);
+    padding: 22px 0 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+}
+.topbar h1 { font-size: var(--fs-xl); }
+.topbar .page-sub { display: block; font-size: var(--fs-sm); font-weight: 500;
+                    color: var(--muted); margin-top: 2px; letter-spacing: 0; }
+.topbar .topbar-meta { text-align: right; color: var(--muted); font-size: var(--fs-sm); }
+.topbar .topbar-meta .today { color: var(--ink); font-weight: 600; }
+
+/* Legacy userbox (kept in case any page still uses it) */
+.topbar .userbox { color: var(--ink); font-weight: 600; }
+.topbar .userbox small { color: var(--muted); font-weight: 400; }
+
+/* ==========================================================================
+   Mobile nav + PWA chrome
+   --------------------------------------------------------------------------
+   The hamburger (.nav-toggle) and the drawer backdrop are hidden on desktop
+   and only appear at the mobile breakpoint below. .pwa-install is the floating
+   "Install app" chip shown by js/pwa.js when the browser offers installation.
+   ========================================================================== */
+.topbar-title { margin-right: auto; }   /* keep title left of the meta block */
+
+.nav-toggle {
+    display: none;                       /* shown only on small screens */
+    align-items: center;
+    justify-content: center;
+    width: 42px; height: 42px;
+    padding: 0;
+    background: var(--surface);
+    color: var(--pine);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+.nav-toggle svg { width: 22px; height: 22px; }
+.nav-toggle:hover { background: var(--surface-2); border-color: var(--pine-soft); }
+
+.nav-backdrop { display: none; }         /* becomes a tap-to-close scrim on mobile */
+
+.pwa-install {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    background: var(--pine);
+    color: #fff;
+    border: 1px solid var(--pine-deep);
+    border-radius: var(--pill);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    box-shadow: 0 10px 24px -10px rgba(20,45,32,.5);
+    cursor: pointer;
+}
+.pwa-install:hover { background: var(--pine-deep); }
+.pwa-install svg { width: 18px; height: 18px; }
+.pwa-install[hidden] { display: none; }  /* beats the inline-flex above */
+
+/* ==========================================================================
+   Cards / panels
+   ========================================================================== */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 22px 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+}
+.card > h2 {
+    font-size: var(--fs-lg);
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px;
+}
+/* small gold tick before card titles = structural, ties to the accent */
+.card > h2::before {
+    content: "";
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--gold);
+    flex: 0 0 auto;
+}
+.card > p { color: var(--muted); }
+.card > p strong { color: var(--ink); }
+.card > table:first-child, .card > form:first-child { margin-top: 0; }
+
+/* ==========================================================================
+   Stat cards (dashboard) — the big number is the hero
+   ========================================================================== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+.stat {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 20px 20px 18px;
+    overflow: hidden;
+}
+.stat::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pine), var(--gold));
+}
+.stat h3 {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0;
+    margin-bottom: 6px;
+}
+.stat p {
+    font-size: var(--fs-num);
+    font-weight: 800;
+    color: var(--pine);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px 18px;
+}
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--ink);
+}
+input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: var(--fs-base);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    transition: border-color .12s ease, box-shadow .12s ease;
+}
+input::placeholder, textarea::placeholder { color: #9aa79f; }
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--pine-soft);
+    box-shadow: 0 0 0 3px rgba(47,125,84,.15);
+}
+input[readonly], input[readonly]:focus {
+    background: var(--surface-2);
+    border-color: var(--line);
+    box-shadow: none;
+    font-weight: 700;
+    color: var(--pine);
+}
+
+/* Buttons */
+button, .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--pine);
+    color: #fff;
+    border: 1px solid var(--pine);
+    padding: 10px 18px;
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    transition: background .12s ease, border-color .12s ease, transform .04s ease;
+}
+button:hover, .btn:hover { background: var(--pine-deep); border-color: var(--pine-deep); }
+button:active, .btn:active { transform: translateY(1px); }
+
+/* Small / secondary link-buttons (Cancel, Clear, and row actions) */
+.btn-sm {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    transition: border-color .12s ease, background .12s ease, color .12s ease;
+}
+.btn-sm:hover { border-color: var(--pine-soft); color: var(--pine-deep); background: var(--surface-2); }
+
+/* Search / filter bar: field + button on one line */
+form.searchbar {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 12px;
+}
+form.searchbar > div:last-child { display: flex; gap: 8px; align-items: center; }
+/* Single-column, non-grid form (login) */
+form.inline { display: block; }
+
+/* Invalid field highlight (set by js/script.js) */
+.field-error {
+    border-color: #d9534f !important;
+    background: #fff6f5 !important;
+    box-shadow: 0 0 0 3px rgba(217,83,79,.14) !important;
+}
+
+/* Small helper text under an input (e.g. the phone number format rule) */
+.field-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: var(--fs-xs);
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   Activity log (dashboard) — "who was last in, and what they did"
+   ========================================================================== */
+
+/* The headline banner. A tinted panel so it reads as a summary, not a row. */
+.last-access {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--r);
+}
+
+/* Initial-letter disc, echoing the login crest */
+.last-access__avatar {
+    flex: 0 0 auto;
+    width: 46px; height: 46px;
+    display: grid; place-items: center;
+    border-radius: var(--pill);
+    background: var(--pine);
+    color: #fff;
+    font-weight: 700;
+    font-size: var(--fs-md);
+    letter-spacing: .02em;
+}
+
+.last-access__body { flex: 1 1 240px; min-width: 0; }
+
+.last-access__label {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-bottom: 3px;
+}
+.last-access__who {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: var(--fs-md);
+    margin-bottom: 2px;
+}
+.last-access__what {
+    font-size: var(--fs-sm);
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+/* Timestamp block, right-aligned on wide screens */
+.last-access__when {
+    flex: 0 0 auto;
+    margin-left: auto;
+    text-align: right;
+    line-height: 1.35;
+}
+.last-access__when strong {
+    display: block;
+    font-size: var(--fs-sm);
+    color: var(--pine);
+}
+.last-access__when span {
+    font-size: var(--fs-xs);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Role pill. Teacher reads green (the default); admin is marked out in gold
+   so elevated accounts stand out when scanning the trail. */
+.role-tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: var(--pill);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: capitalize;
+    background: #e4f0e8;
+    color: var(--pine);
+    border: 1px solid #cfe4d6;
+}
+.role-tag--admin {
+    background: #fdf4e6;
+    color: var(--gold-deep);
+    border-color: #f0ddbd;
+}
+
+/* Action chip. Neutral by default; colour only where it carries meaning. */
+.act {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: var(--r-sm);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+}
+.act--added,
+.act--entered     { background: var(--ok-bg);  color: var(--ok-fg);  border-color: var(--ok-line); }
+.act--deleted,
+.act--failedsignin{ background: var(--err-bg); color: var(--err-fg); border-color: var(--err-line); }
+.act--updated     { background: #fdf4e6; color: var(--gold-deep); border-color: #f0ddbd; }
+.act--signedin    { background: #e8eef4; color: #2b4a66; border-color: #cfdce8; }
+
+/* Secondary detail inside a busy table cell */
+.muted-note {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+/* ==========================================================================
+   Tables — the core of a records system
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 4px;
+    font-size: var(--fs-sm);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    overflow: hidden;
+}
+th, td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+th {
+    background: var(--pine);
+    color: #eaf2ec;
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    letter-spacing: .01em;
+    border-bottom-color: var(--pine-deep);
+    white-space: nowrap;
+}
+tbody tr:last-child td, tr:last-child td { border-bottom: none; }
+/* zebra + hover for scannability */
+table tr:nth-child(even) td { background: var(--surface-2); }
+table tr:hover td { background: #eef4ee; }
+/* totals / emphasis rows that use <th> inside the body */
+td:empty::after { content: "—"; color: #b7bfb7; }
+
+/* Row actions */
+.actions { white-space: nowrap; }
+.actions a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    margin-right: 6px;
+    padding: 5px 11px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--pine-deep);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    transition: border-color .12s ease, background .12s ease, color .12s ease;
+}
+.actions a:hover { border-color: var(--pine-soft); background: #fff; }
+.actions a.btn-danger { color: #a3271f; }
+.actions a.btn-danger:hover { border-color: #d98b85; background: #fdf1f0; }
+
+/* .btn-danger anywhere else */
+.btn-danger { color: #a3271f; }
+
+/* ==========================================================================
+   Grade badge
+   ========================================================================== */
+.grade {
+    display: inline-block;
+    min-width: 36px;
+    text-align: center;
+    padding: 3px 10px;
+    border-radius: var(--pill);
+    font-weight: 700;
+    font-size: var(--fs-xs);
+    letter-spacing: .02em;
+    background: #e4f0e8;
+    color: var(--pine);
+    border: 1px solid #cfe4d6;
+}
+
+/* ==========================================================================
+   Flash / validation messages
+   ========================================================================== */
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--r-sm);
+    margin-bottom: 20px;
+    font-size: var(--fs-sm);
+    border: 1px solid transparent;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+}
+.alert::before { font-weight: 700; flex: 0 0 auto; }
+.alert-success { background: var(--ok-bg);  color: var(--ok-fg);  border-color: var(--ok-line); }
+.alert-success::before { content: "\2713"; }          /* check */
+.alert-error   { background: var(--err-bg); color: var(--err-fg); border-color: var(--err-line); }
+.alert-error::before   { content: "\26A0"; }          /* warning */
+
+/* ==========================================================================
+   Login page
+   ========================================================================== */
+body.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background:
+        radial-gradient(1100px 520px at 15% -10%, rgba(47,125,84,.16), transparent 60%),
+        radial-gradient(900px 500px at 110% 110%, rgba(201,138,43,.14), transparent 55%),
+        var(--paper);
+}
+.login-box {
+    background: var(--surface);
+    width: 380px;
+    max-width: 100%;
+    padding: 36px 34px 34px;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px -28px rgba(20,45,32,.45);
+    position: relative;
+}
+.login-box::before {   /* gold top rule as a brand cue */
+    content: "";
+    position: absolute; left: 34px; right: 34px; top: 0;
+    height: 3px; border-radius: 0 0 3px 3px;
+    background: linear-gradient(90deg, var(--pine), var(--gold));
+}
+.login-crest {
+    width: 52px; height: 52px;
+    margin: 4px auto 16px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    background: var(--pine);
+    color: var(--gold);
+    font-weight: 800; font-size: 19px; letter-spacing: .02em;
+}
+.login-box h2 { text-align: center; color: var(--ink); font-size: var(--fs-lg); margin-bottom: 4px; }
+.login-box p  { text-align: center; margin-bottom: 22px; color: var(--muted); font-size: var(--fs-sm); }
+.login-box label { margin: 14px 0 6px; }
+.login-box .alert { text-align: left; }
+.login-box button { width: 100%; margin-top: 22px; padding: 12px; font-size: var(--fs-base); }
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+.muted { color: var(--muted); }
+.stack > * + * { margin-top: 14px; }
+
+.app-foot {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    text-align: center;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 860px) {
+    :root { --sidebar-w: 0px; }
+
+    /* Sidebar becomes an off-canvas drawer, slid in by the .open class
+       (toggled in js/pwa.js). It stays position:fixed from the base rule. */
+    .sidebar {
+        width: 270px;
+        max-width: 82vw;
+        height: 100vh;
+        min-height: 0;
+        padding: 18px 0;
+        transform: translateX(-100%);
+        transition: transform .22s ease;
+        box-shadow: 0 0 40px -8px rgba(12,22,16,.55);
+        z-index: 50;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    /* Tap-to-close scrim behind the open drawer. */
+    .nav-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(12,22,16,.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .2s ease, visibility .2s ease;
+        z-index: 40;
+    }
+    .nav-backdrop.show { opacity: 1; visibility: visible; }
+
+    /* Lock the page behind the drawer while it is open. */
+    body.nav-open { overflow: hidden; }
+
+    .nav-toggle { display: inline-flex; }   /* reveal the hamburger */
+
+    .main { margin-left: 0; padding: 0 18px 32px; max-width: none; }
+    form.searchbar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .topbar-meta { display: none; }   /* reclaim header width on phones */
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+
+    /* Stack the "last access" banner and let the timestamp sit under the name
+       rather than being pushed to a lonely right-aligned line. */
+    .last-access__when {
+        margin-left: 0;
+        text-align: left;
+        flex-basis: 100%;
+        padding-top: 4px;
+        border-top: 1px solid var(--line);
+    }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}
+
+/* ==========================================================================
+   Print — show only the report card, hide app chrome
+   ========================================================================== */
+@media print {
+    body { background: #fff; }
+    .sidebar, .topbar, .no-print, .nav-backdrop, .pwa-install, form { display: none !important; }
+    .main { margin-left: 0; padding: 0; max-width: none; }
+    .card { box-shadow: none; border: 1px solid #bbb; border-radius: 0; }
+    .card > h2::before { display: none; }
+    table, th, td { border-color: #999 !important; }
+    th { background: #eee !important; color: #000 !important; }
+    .grade { border: 1px solid #999; background: #fff !important; color: #000 !important; }
+    a { color: #000; }
+}
